@@ -1,0 +1,16 @@
+PODS:
+  - MACamera (0.1.0)
+
+DEPENDENCIES:
+  - MACamera (from `../`)
+
+EXTERNAL SOURCES:
+  MACamera:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  MACamera: 3d74b470fa332e788e2cbdf1d5ec1d5467c995e8
+
+PODFILE CHECKSUM: 0ccbd6131ae0e45a5c9436f9f9b469c4945b34db
+
+COCOAPODS: 1.5.3

@@ -1,0 +1,6 @@
+framework module MACamera {
+  umbrella header "MACamera-umbrella.h"
+
+  export *
+  module * { export * }
+}
