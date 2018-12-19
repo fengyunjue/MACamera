@@ -1,6 +1,6 @@
 # MACamera
 
-[![CI Status](https://img.shields.io/travis/ma772528138@qq.com/MACamera.svg?style=flat)](https://travis-ci.org/ma772528138@qq.com/MACamera)
+[![CI Status](https://img.shields.io/travis/fengyunjue/MACamera.svg?style=flat)](https://travis-ci.org/ma772528138@qq.com/MACamera)
 [![Version](https://img.shields.io/cocoapods/v/MACamera.svg?style=flat)](https://cocoapods.org/pods/MACamera)
 [![License](https://img.shields.io/cocoapods/l/MACamera.svg?style=flat)](https://cocoapods.org/pods/MACamera)
 [![Platform](https://img.shields.io/cocoapods/p/MACamera.svg?style=flat)](https://cocoapods.org/pods/MACamera)
