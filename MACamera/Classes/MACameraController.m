@@ -8,19 +8,20 @@
 
 #import "MACameraController.h"
 #import <Photos/Photos.h>
+#import <AVFoundation/AVFoundation.h>
 
 //类型枚举
 enum {
     PhotoType,
     VideoType
 };
-typedef NSInteger MAShootingType;
+typedef NSInteger ShootingType;
 
 
 @interface ShootingButton : UIView
 
-@property (nonatomic, copy) void(^shootingStart)(MAShootingType type);
-@property (nonatomic, copy) void(^shootingEnd)(MAShootingType type);
+@property (nonatomic, copy) void(^shootingStart)(ShootingType type);
+@property (nonatomic, copy) void(^shootingEnd)(ShootingType type);
 /// 录制时间, 默认10s
 @property (nonatomic, assign) NSTimeInterval  time;
 
@@ -30,8 +31,8 @@ typedef NSInteger MAShootingType;
 
 +(ShootingCenterButton*)getShootingCenterButton:(CGFloat)maxLineW minLineWidth:(CGFloat)minLineW lineColor:(UIColor*)lineColor centerColor:(UIColor*)centerColor;
 
-@property (nonatomic, copy) void(^shootingStart)(MAShootingType type);
-@property (nonatomic, copy) void(^shootingEnd)(MAShootingType type);
+@property (nonatomic, copy) void(^shootingStart)(ShootingType type);
+@property (nonatomic, copy) void(^shootingEnd)(ShootingType type);
 
 @end
 
@@ -131,13 +132,13 @@ typedef NSInteger MAShootingType;
     [self.view addSubview:_shootingButton];
     _shootingButton.time = _time;
     __weak typeof(self) weakSelf = self;
-    _shootingButton.shootingStart = ^(MAShootingType type) {
+    _shootingButton.shootingStart = ^(ShootingType type) {
         weakSelf.isVideo = type == VideoType;
         if (type == VideoType) {
             [weakSelf startRecordVideo];
         }
     };
-    _shootingButton.shootingEnd = ^(MAShootingType type) {
+    _shootingButton.shootingEnd = ^(ShootingType type) {
         [weakSelf buttonAnimation:YES];
         
         //取出播放视图
@@ -428,8 +429,10 @@ typedef NSInteger MAShootingType;
     return _localMovieUrl;
 }
 
-+ (void)movFileTransformToMP4WithSourceUrl:(NSURL *)sourceUrl completion:(void(^)(NSString *Mp4FilePath))comepleteBlock session:(void(^)(AVAssetExportSession *session))sessionBlock{
-    
++ (void)movFileTransformToMP4WithSourceUrl:(NSURL *)sourceUrl completion:(void(^)(NSString *Mp4FilePath, NSError *error))comepleteBlock {
+    if (!comepleteBlock) {
+        return;
+    }
     AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:sourceUrl options:nil];
     
     NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:avAsset];
@@ -451,7 +454,7 @@ typedef NSInteger MAShootingType;
         
         //如有此文件则直接返回
         if ([[NSFileManager defaultManager] fileExistsAtPath:resultPath]) {
-            comepleteBlock(resultPath);
+            comepleteBlock(resultPath, nil);
             return;
         }
         
@@ -459,35 +462,30 @@ typedef NSInteger MAShootingType;
              switch (exportSession.status) {
                      
                  case AVAssetExportSessionStatusUnknown: {
-//                     NSLog(@"视频格式转换出错Unknown");
-                     sessionBlock(exportSession);
+                     comepleteBlock(nil, [NSError errorWithDomain:@"视频格式转换出错" code:AVAssetExportSessionStatusUnknown userInfo:@{@"exportSession":exportSession}]);
                  }
                      break;
                  case AVAssetExportSessionStatusWaiting: {
-//                     NSLog(@"视频格式转换出错Waiting");
-                     sessionBlock(exportSession);
+                     comepleteBlock(nil, [NSError errorWithDomain:@"视频格式转换出错" code:AVAssetExportSessionStatusUnknown userInfo:@{@"exportSession":exportSession}]);
                  }
                      break;
                  case AVAssetExportSessionStatusExporting: {
-//                     NSLog(@"视频格式转换出错Exporting");
-                     sessionBlock(exportSession);
+                     comepleteBlock(nil, [NSError errorWithDomain:@"视频格式转换出错" code:AVAssetExportSessionStatusUnknown userInfo:@{@"exportSession":exportSession}]);
                  }
                      break;
                  case AVAssetExportSessionStatusCompleted: {
-                     comepleteBlock(resultPath);
+                     comepleteBlock(resultPath, nil);
 //                     NSLog(@"mp4 file size:%lf MB",[NSData dataWithContentsOfURL:exportSession.outputURL].length/1024.f/1024.f);
 //                     NSData *da = [NSData dataWithContentsOfFile:resultPath];
 //                     NSLog(@"da:%lu",(unsigned long)da.length);
                  }
                      break;
                  case AVAssetExportSessionStatusFailed: {
-//                     NSLog(@"视频格式转换出错Unknown");
-                     sessionBlock(exportSession);
+                     comepleteBlock(nil, [NSError errorWithDomain:@"视频格式转换出错" code:AVAssetExportSessionStatusUnknown userInfo:@{@"exportSession":exportSession}]);
                  }
                      break;
                  case AVAssetExportSessionStatusCancelled: {
-//                     NSLog(@"视频格式转换出错Cancelled");
-                     sessionBlock(exportSession);
+                     comepleteBlock(nil, [NSError errorWithDomain:@"视频格式转换出错" code:AVAssetExportSessionStatusUnknown userInfo:@{@"exportSession":exportSession}]);
                  }
                      break;
              }
@@ -645,7 +643,7 @@ typedef NSInteger MAShootingType;
         [self.layer addSublayer:_progressLayer];
         
         __weak typeof(self) weakSelf = self;
-        centerButton.shootingStart = ^(MAShootingType type) {
+        centerButton.shootingStart = ^(ShootingType type) {
             //长按的手势（开启定时器）
             if (type==VideoType) {
                 weakSelf.progressLayer.strokeColor = [UIColor greenColor].CGColor;
@@ -657,7 +655,7 @@ typedef NSInteger MAShootingType;
                 weakSelf.shootingStart(type);
             }
         };
-        centerButton.shootingEnd = ^(MAShootingType type) {
+        centerButton.shootingEnd = ^(ShootingType type) {
             if (type == VideoType) {
                 if (weakSelf.displayLink) { // 避免重复调用,如果displayLink不存在,说明已经结束了
                     [weakSelf stopProress];

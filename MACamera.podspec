@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'MACamera'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = '微信样式小视频录制组件'
 
 # This description is used to generate tags and improve search results.
@@ -36,7 +36,7 @@ Pod::Spec.new do |s|
      'MACamera' => ['MACamera/Assets/*.png']
    }
 
-  s.public_header_files = 'Pod/Classes/**/*.h'
+  s.public_header_files = 'MACamera/Classes/**/*.h'
   # s.frameworks = 'UIKit', 'MapKit'
   
 end

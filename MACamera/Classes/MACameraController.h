@@ -7,7 +7,6 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <AVFoundation/AVFoundation.h>
 
 @interface MACameraController : UIViewController
 
@@ -21,7 +20,7 @@
  */
 @property (nonatomic, assign) NSTimeInterval  time;
 
-+ (void)movFileTransformToMP4WithSourceUrl:(NSURL *)sourceUrl completion:(void(^)(NSString *Mp4FilePath))comepleteBlock session:(void(^)(AVAssetExportSession *session))sessionBlock;
++ (void)movFileTransformToMP4WithSourceUrl:(NSURL *)sourceUrl completion:(void(^)(NSString *Mp4FilePath, NSError *error))comepleteBlock;
 
 + (void)allowCameraAndPhoto:(void (^)(BOOL allow))completion;
 
